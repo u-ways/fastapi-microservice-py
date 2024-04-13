@@ -1,0 +1,31 @@
+name: CI
+
+on: [
+  workflow_call,
+  workflow_dispatch
+]
+
+jobs:
+  Test-Checker:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: 'Checkout to current branch'
+        uses: actions/checkout@v4
+      - name: 'Run acceptance tests'
+        run: make test-app-docker
+
+  Lint-Checker:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: 'Checkout to current branch'
+        uses: actions/checkout@v4
+      - name: 'Run lint check'
+        run: make check-lint-docker
+
+  Format-Checker:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: 'Checkout to current branch'
+        uses: actions/checkout@v4
+      - name: 'Run format check'
+        run: make check-format-docker

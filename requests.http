@@ -1,0 +1,15 @@
+# This is a convenient file leveraging the Open HTTP Requests Collection format to provide a quick way to test the API.
+# See: https://www.jetbrains.com/help/idea/http-client-in-product-code-editor.html
+###
+GET http://localhost:8000/
+
+###
+GET http://localhost:8000/health
+Accept: application/json
+
+###
+GET http://localhost:8000/openapi.json
+Accept: application/json
+
+###
+GET http://localhost:8000/metrics

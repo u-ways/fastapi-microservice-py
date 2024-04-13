@@ -1,0 +1,66 @@
+name: CD
+
+on: [
+  workflow_call,
+  workflow_dispatch
+]
+
+env:
+  APP_VERSION: latest
+  APP_NAME: ${{ github.event.repository.name }}
+  APP_OWNER: ${{ github.repository_owner }}
+
+jobs:
+  Export-Image:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: 'Checkout to current branch'
+        uses: actions/checkout@v4
+      - name: 'Exporting production image'
+        run: APP_NAME=${{ env.APP_NAME }} APP_VERSION=${{ env.APP_VERSION }} make export-production-image
+      - name: 'Log in to GitHub Container Registry'
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+      - name: 'Pushing Docker image to GitHub Container Registry (GHCR)'
+        run: |
+          IMAGE_ID="ghcr.io/${{ env.APP_OWNER }}/${{ env.APP_NAME }}:${{ env.APP_VERSION }}"
+          docker tag ${{ env.APP_NAME }} $IMAGE_ID && docker push $IMAGE_ID
+      - name: 'Uploading TAR docker image to artifacts'
+        uses: actions/upload-artifact@v4
+        with:
+          name: image-artifacts
+          path: ./build/images
+
+  Deploy-Image:
+    needs: Export-Image
+    runs-on: ubuntu-22.04
+    steps:
+      - name: 'Deploying App image'
+        run: echo "Deploying App image... (mocked)"
+
+  Export-Doc:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: 'Checkout to current branch'
+        uses: actions/checkout@v4
+      - name: 'Exporting OpenAPI schema'
+        run: make export-openapi-schema
+      - name: 'Uploading OpenAPI schema'
+        uses: actions/upload-artifact@v4
+        with:
+          name: openapi-artifacts
+          path: ./build/openapi
+
+  Deploy-Doc:
+    needs: Export-Doc
+    runs-on: ubuntu-22.04
+    steps:
+      - name: 'Downloading OpenAPI schema'
+        uses: actions/download-artifact@v4
+        with:
+          name: openapi-artifacts
+          path: ./build/openapi
+      - name: 'Deploying OpenAPI schema'
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./build/openapi
