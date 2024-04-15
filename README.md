@@ -72,7 +72,7 @@ completely built and run in an isolated deployment environment in a consistent m
 
 ### Published Documentation
 
-At the end of a successfully CI/CD pipeline, the OpenAPI documentation is published to GitHub Pages. You can access the
+At the end of a successful CI/CD pipeline, the OpenAPI documentation is published to GitHub Pages. You can access the
 documentation via the following
 link: [https://u-ways.github.io/fastapi-microservice-py/](https://u-ways.github.io/fastapi-microservice-py/)
 
