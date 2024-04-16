@@ -1,32 +1,27 @@
-import unittest
-
+import pytest
 from httpx import Response
-from parameterized import parameterized
-from starlette.testclient import TestClient
 
-from main import app
+from .utils import given_a_request
 
 
-class DocsTest(unittest.TestCase):
-    @staticmethod
-    def given_a_request(endpoint) -> Response:
-        return TestClient(app).get(endpoint)
-
-    @parameterized.expand([("docs",), ("redoc",)])
-    def test_should_return_200(self, endpoint):
-        self.assertTrue(self.given_a_request(endpoint).is_success)
-
-    @parameterized.expand([("docs",), ("redoc",)])
-    def test_should_return_html(self, endpoint):
-        response = self.given_a_request(endpoint)
-        self.assertTrue(response.headers["content-type"].startswith("text/html"))
-
-    def test_should_expose_openapi_json(self):
-        response = self.given_a_request("/openapi.json")
-        self.assertTrue(response.is_success)
-        self.assertTrue(response.headers["content-type"].startswith("application/json"))
-        self.assertTrue(response.json().get("openapi"))
+@pytest.fixture
+def response(client, request) -> Response:
+    endpoint = request.param
+    return given_a_request(client, endpoint)
 
 
-if __name__ == "__main__":
-    unittest.main()
+@pytest.mark.parametrize("response", ["docs", "redoc"], indirect=True)
+def test_should_return_200(response):
+    assert response.is_success, "Should return a 200 success status"
+
+
+@pytest.mark.parametrize("response", ["docs", "redoc"], indirect=True)
+def test_should_return_html(response):
+    assert response.headers["content-type"].startswith("text/html"), "Content type should be HTML"
+
+
+@pytest.mark.parametrize("response", ["openapi.json"], indirect=True)
+def test_should_expose_openapi_json(response):
+    assert response.status_code == 200, "Should return a 200 success status for OpenAPI JSON"
+    assert response.headers["content-type"].startswith("application/json"), "Content type should be JSON"
+    assert "openapi" in response.json(), "Response JSON should contain 'openapi' field"

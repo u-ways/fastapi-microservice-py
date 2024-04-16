@@ -10,7 +10,7 @@ authors = ["u-ways <work@u-ways.info>"]
 repository = "https://github.com/u-ways/fastapi-microservice-py"
 readme = "README.md"
 license = "MIT"
-packages = [ { include = "src", from = "." } ]
+packages = [{ include = "src", from = "." }]
 
 [tool.poetry.dependencies]
 python = "^3.11"
@@ -26,7 +26,6 @@ flake8 = "^7.0.0"
 flake8-pyproject = "^1.2.3"
 httpx = "^0.27.0"
 pytest = "^8.1.1"
-parameterized = "^0.9.0"
 
 [tool.black]
 line-length = 120
@@ -36,5 +35,5 @@ max-line-length = 120
 count = true
 
 [tool.pytest.ini_options]
-pythonpath = "./src"
+pythonpath = "src"
 testpaths = "tests"

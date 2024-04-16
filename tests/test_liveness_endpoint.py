@@ -1,26 +1,21 @@
-import unittest
-
+import pytest
 from httpx import Response
-from starlette.testclient import TestClient
 
-from main import app
 from model.state import State
 from model.status import Status
+from .utils import given_a_request
 
 
-class LivenessTest(unittest.TestCase):
-    @staticmethod
-    def given_a_request() -> Response:
-        return TestClient(app).get("/health")
-
-    def test_should_return_200(self):
-        self.assertTrue(self.given_a_request().is_success)
-
-    def test_should_return_status_model(self):
-        expected_status = Status(status=State.UP, message="Service is healthy.")
-        actual_status = Status(**self.given_a_request().json())
-        self.assertEqual(expected_status, actual_status)
+@pytest.fixture(autouse=True)
+def response(client) -> Response:
+    return given_a_request(client, "/health")
 
 
-if __name__ == "__main__":
-    unittest.main()
+def test_should_return_200(response):
+    assert response.is_success, "Should return a 200 success status"
+
+
+def test_should_return_status_model(response):
+    expected_status = Status(status=State.UP, message="Service is healthy.")
+    actual_status = Status(**response.json())
+    assert expected_status == actual_status

@@ -1,22 +1,17 @@
-import unittest
-
+import pytest
 from httpx import Response
-from starlette.testclient import TestClient
 
-from main import app
-
-
-class ReadinessTest(unittest.TestCase):
-    @staticmethod
-    def given_a_request() -> Response:
-        return TestClient(app).get("/")
-
-    def test_should_return_200(self):
-        self.assertTrue(self.given_a_request().is_success)
-
-    def test_should_return_empty_body(self):
-        self.assertEqual("null", self.given_a_request().text)
+from .utils import given_a_request
 
 
-if __name__ == "__main__":
-    unittest.main()
+@pytest.fixture(autouse=True)
+def response(client) -> Response:
+    return given_a_request(client, "/")
+
+
+def test_should_return_200(response):
+    assert response.is_success, "Should return a 200 success status"
+
+
+def test_should_return_empty_body(response):
+    assert response.text == "null", "Should return an empty body"

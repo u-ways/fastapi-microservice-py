@@ -153,4 +153,8 @@ You can also run the linting and formatting actions to resolve any issues:
 make format-code && make lint-code
 ```
 
+Also, don't forget to set your IDE to run the tests using the `pytest` configuration. This will ensure that you can run
+the tests directly from your IDE and get immediate feedback on your changes. If you're using PyCharm, you can follow
+the instructions [here](https://www.jetbrains.com/help/pycharm/pytest.html#create-pytest-test).
+
 ___

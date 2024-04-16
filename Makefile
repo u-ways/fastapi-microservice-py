@@ -89,7 +89,7 @@ test-app-docker: require-docker
 check-format-docker: require-docker
 	@echo "Checking application formatting... (Containerised)"
 	@$(call build_docker_image,development)
-	@$(call run_docker_dev_mount,black --check .)
+	@$(call run_docker_dev_mount,black --check --line-length=120 .)
 
 check-lint-docker: require-docker
 	@echo "Checking application linting... (Containerised)"
