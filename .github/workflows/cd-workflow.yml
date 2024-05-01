@@ -33,6 +33,7 @@ jobs:
   Deploy-Image:
     needs: Export-Image
     runs-on: ubuntu-22.04
+    if: github.ref == 'refs/heads/main'
     steps:
       - name: 'Deploying App image'
         run: echo "Deploying App image... (mocked)"
@@ -53,6 +54,7 @@ jobs:
   Deploy-Doc:
     needs: Export-Doc
     runs-on: ubuntu-22.04
+    if: github.ref == 'refs/heads/main'
     steps:
       - name: 'Downloading OpenAPI schema'
         uses: actions/download-artifact@v4
